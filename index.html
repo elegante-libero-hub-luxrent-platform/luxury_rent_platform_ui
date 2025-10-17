@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Luxury Rental – Placeholder</title>
+  <style>
+    body{font-family:system-ui;margin:0} nav{display:flex;gap:12px;padding:12px;border-bottom:1px solid #ddd}
+    main{padding:16px} .card{border:1px solid #ddd;border-radius:12px;padding:16px;max-width:720px}
+    a{color:#0a58ca;text-decoration:none}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#/">Home</a><a href="#/catalog">Catalog</a><a href="#/orders">My Orders</a>
+    <a href="#/profile">Profile</a><a href="#/login" style="margin-left:auto">Login</a>
+  </nav>
+  <main id="app"></main>
+
+  <script>
+    const routes = {
+      "/": `<div class="card"><h1>Luxury Rental</h1><p>Placeholder UI. Backend services coming in Sprint 2.</p></div>`,
+      "/catalog": `<div class="card"><h2>Catalog</h2><p>List of items (placeholder)</p><ul><li>Chanel Jacket — $99/day</li><li>Gucci Bag — $79/day</li></ul></div>`,
+      "/orders": `<div class="card"><h2>My Orders</h2><p>Not implemented.</p></div>`,
+      "/profile": `<div class="card"><h2>Profile</h2><p>Not implemented.</p></div>`,
+      "/login": `<div class="card"><h2>Login</h2><p>Not implemented.</p></div>`,
+    };
+    function render(){ const r = location.hash.slice(1) || "/"; document.getElementById("app").innerHTML = routes[r] || routes["/"]; }
+    window.addEventListener("hashchange", render); render();
+  </script>
+</body>
+</html>
+
