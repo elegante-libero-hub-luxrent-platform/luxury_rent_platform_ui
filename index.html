@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Dashboard</title>
-    <!-- 
-        IMPORTANT: CORS Note
-        This HTML file must be served via HTTP (not file://) to avoid CORS errors.
-        Run: python3 -m http.server 8000
-        Then open: http://localhost:8000/web_ui.html
-    -->
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -658,7 +652,6 @@
                             return;
                         }
                     } else if (endpoint.path.includes(`{${param.name}}`)) {
-                        // Replace {id} in the string
                         constructedUrl = constructedUrl.replace(`{${param.name}}`, inputs[param.name]);
                     }
                 });
@@ -668,7 +661,6 @@
                 const urlObj = new URL(constructedUrl);
                 endpoint.params.forEach(param => {
                     if (param.name !== 'body' && !endpoint.path.includes(`{${param.name}}`)) {
-                        // It's a query param
                         if (inputs[param.name]) {
                             urlObj.searchParams.append(param.name, inputs[param.name]);
                         }
@@ -881,7 +873,7 @@
         };
 
         const App = () => {
-            const [activeTab, setActiveTab] = useState(2); // Start on Catalog
+            const [activeTab, setActiveTab] = useState(1);
 
             return (
                 <div className="min-h-screen pb-20">
