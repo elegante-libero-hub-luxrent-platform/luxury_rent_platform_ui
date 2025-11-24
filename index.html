@@ -77,6 +77,7 @@
         const USER_BASE_URL = "https://user-and-profile-service-314897419193.europe-west1.run.app";
         const CATALOG_BASE_URL = "https://catalog-and-inventory-service-314897419193.europe-west1.run.app";
         const ORDER_BASE_URL = "https://order-and-rental-service-314897419193.europe-west1.run.app";
+        const COMPOSITE_BASE_URL = "https://composite-microservice-314897419193.europe-west1.run.app";
 
         // User & Profile Endpoints
         const userEndpoints = [
@@ -471,6 +472,114 @@
             }
         ];
 
+        // Composite Endpoints
+        const compositeEndpoints = [
+            {
+                id: 1,
+                name: "Health Check (Healthz)",
+                method: "GET",
+                path: "/healthz",
+                description: "Check if the composite service is alive.",
+                params: []
+            },
+            {
+                id: 2,
+                name: "Readiness Check (Readyz)",
+                method: "GET",
+                path: "/readyz",
+                description: "Check if the composite service is ready to serve traffic.",
+                params: []
+            },
+            {
+                id: 3,
+                name: "Get User",
+                method: "GET",
+                path: "/users/{user_id}",
+                description: "Get aggregated user details.",
+                params: [
+                    { name: "user_id", type: "text", placeholder: "User ID", value: "" }
+                ]
+            },
+            {
+                id: 4,
+                name: "List Items",
+                method: "GET",
+                path: "/items",
+                description: "List items from the underlying catalog service.",
+                params: [
+                    { name: "pageSize", type: "text", placeholder: "10", value: "10" },
+                    { name: "pageToken", type: "text", placeholder: "Token", value: "" }
+                ]
+            },
+            {
+                id: 5,
+                name: "Get Item",
+                method: "GET",
+                path: "/items/{item_id}",
+                description: "Get details for a specific item.",
+                params: [
+                    { name: "item_id", type: "text", placeholder: "Item ID", value: "" }
+                ]
+            },
+            {
+                id: 6,
+                name: "Create Order",
+                method: "POST",
+                path: "/orders",
+                description: "Orchestrate order creation across services.",
+                params: [
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "userId": "user_123",\n  "itemId": "item_456",\n  "startDate": "2025-01-01",\n  "endDate": "2025-01-05",\n  "notes": "Composite Order"\n}'
+                    }
+                ]
+            },
+            {
+                id: 7,
+                name: "Get Order",
+                method: "GET",
+                path: "/orders/{order_id}",
+                description: "Get aggregated order details.",
+                params: [
+                    { name: "order_id", type: "text", placeholder: "Order ID", value: "" }
+                ]
+            },
+            {
+                id: 8,
+                name: "Confirm Order",
+                method: "POST",
+                path: "/orders/{order_id}/confirm",
+                description: "Trigger async confirmation via composite service.",
+                params: [
+                    { name: "order_id", type: "text", placeholder: "Order ID", value: "" }
+                ]
+            },
+            {
+                id: 9,
+                name: "Get Job Status",
+                method: "GET",
+                path: "/jobs/{job_id}",
+                description: "Track status of composite background jobs.",
+                params: [
+                    { name: "job_id", type: "text", placeholder: "Job ID", value: "" }
+                ]
+            },
+            {
+                id: 10,
+                name: "Search",
+                method: "GET",
+                path: "/search",
+                description: "Search across aggregated data.",
+                params: [
+                    { name: "q", type: "text", placeholder: "Query term", value: "" },
+                    { name: "pageSize", type: "text", placeholder: "10", value: "10" },
+                    { name: "pageToken", type: "text", placeholder: "Token", value: "" }
+                ]
+            }
+        ];
+
         // --- COMPONENTS ---
 
         const Navbar = ({ activeTab, setActiveTab }) => {
@@ -478,7 +587,7 @@
                 { id: 1, label: "User & Profile", color: "bg-pink-200 hover:bg-pink-300 text-pink-800" },
                 { id: 2, label: "Catalog & Inventory", color: "bg-blue-200 hover:bg-blue-300 text-blue-800" }, 
                 { id: 3, label: "Order & Rental", color: "bg-green-200 hover:bg-green-300 text-green-800" },
-                { id: 4, label: "Microservice 4", color: "bg-purple-200 hover:bg-purple-300 text-purple-800" },
+                { id: 4, label: "Composite Service", color: "bg-purple-200 hover:bg-purple-300 text-purple-800" },
             ];
 
             return (
@@ -748,6 +857,29 @@
             );
         };
 
+        const CompositePage = () => {
+            return (
+                <div className="w-full">
+                    <div className="bg-purple-50 border-4 border-purple-100 rounded-[2rem] p-8 mb-8 text-center">
+                        <div className="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
+                             <i className="ph ph-circles-three-plus text-4xl text-purple-500"></i>
+                        </div>
+                        <h2 className="text-3xl font-black text-slate-800 mb-2">Composite Service</h2>
+                        <p className="text-slate-500 font-medium">Aggregated operations and cross-service orchestration.</p>
+                        <div className="mt-4 inline-block bg-white px-4 py-1 rounded-full text-xs font-mono text-slate-400 border border-slate-200">
+                            Host: {COMPOSITE_BASE_URL}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {compositeEndpoints.map(ep => (
+                            <EndpointCard key={ep.id} endpoint={ep} baseUrl={COMPOSITE_BASE_URL} />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
             const [activeTab, setActiveTab] = useState(2); // Start on Catalog
 
@@ -766,7 +898,7 @@
                         {activeTab === 1 && <UserPage />}
                         {activeTab === 2 && <CatalogPage />}
                         {activeTab === 3 && <OrderPage />}
-                        {activeTab === 4 && <EmptyState title="Microservice 4" />}
+                        {activeTab === 4 && <CompositePage />}
                     </main>
                 </div>
             );
