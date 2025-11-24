@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Dashboard</title>
+    <!-- 
+        IMPORTANT: CORS Note
+        This HTML file must be served via HTTP (not file://) to avoid CORS errors.
+        Run: python3 -m http.server 8000
+        Then open: http://localhost:8000/web_ui.html
+    -->
+    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
@@ -88,7 +95,7 @@
                 path: "/users/{userId}",
                 description: "Get user profile by ID.",
                 params: [
-                    { name: "userId", type: "text", placeholder: "User ID", value: "" }
+                    { name: "userId", type: "text", placeholder: "User ID", value: "1" }
                 ]
             },
             {
@@ -116,11 +123,14 @@
                 name: "List Catalog Items",
                 method: "GET",
                 path: "/catalog/items",
-                description: "List items with filters (brand, category, price).",
+                description: "List items with filters (brand, category, price, availability).",
                 params: [
                     { name: "pageSize", type: "text", placeholder: "10", value: "10" },
-                    { name: "brand", type: "text", placeholder: "e.g., Prada", value: "" },
-                    { name: "category", type: "text", placeholder: "e.g., handbag", value: "" }
+                    { name: "category", type: "text", placeholder: "e.g. Handbag", value: "" },
+                    { name: "brand", type: "text", placeholder: "e.g. Rolex", value: "" },
+                    { name: "minPrice", type: "text", placeholder: "Min Price (cents)", value: "" },
+                    { name: "maxPrice", type: "text", placeholder: "Max Price (cents)", value: "" },
+                    { name: "availableOn", type: "date", placeholder: "YYYY-MM-DD", value: "" }
                 ]
             },
             {
@@ -133,66 +143,105 @@
                     { 
                         name: "body", 
                         type: "json", 
-                        placeholder: '{\n  "sku": "BAG-001",\n  "name": "Luxury Bag",\n  "brand": "Gucci",\n  "category": "Handbag",\n  "rent_price_cents": 5000,\n  "deposit_cents": 10000\n}', 
-                        value: "" 
+                        placeholder: "JSON Body", 
+                        value: '{\n  "sku": "LUX-001",\n  "name": "Golden Watch",\n  "brand": "Rolex",\n  "category": "Watches",\n  "rent_price_cents": 5000,\n  "deposit_cents": 20000,\n  "description": "A fine luxury watch."\n}' 
                     }
                 ]
             },
             {
                 id: 3,
-                name: "Get Item Details",
+                name: "Get Catalog Item",
                 method: "GET",
                 path: "/catalog/items/{id}", 
                 description: "Get a single catalog item by its ID.",
                 params: [
-                    { name: "id", type: "text", placeholder: "Item ID (e.g., it-123)", value: "" }
+                    { name: "id", type: "text", placeholder: "Item ID", value: "1" }
                 ]
             },
             {
                 id: 4,
-                name: "Update Item",
+                name: "Update Catalog Item",
                 method: "PUT",
                 path: "/catalog/items/{id}",
                 description: "Full update of a catalog item.",
                 params: [
-                    { name: "id", type: "text", placeholder: "Item ID", value: "" },
+                    { name: "id", type: "text", placeholder: "Item ID", value: "1" },
                     { 
                         name: "body", 
                         type: "json", 
-                        placeholder: '{\n  "name": "Updated Bag Name",\n  "rent_price_cents": 6000\n}', 
-                        value: "" 
+                        placeholder: "JSON Body", 
+                        value: '{\n  "name": "Golden Watch V2",\n  "rent_price_cents": 5500\n}' 
                     }
                 ]
             },
             {
                 id: 5,
-                name: "Delete Item",
+                name: "Delete Catalog Item",
                 method: "DELETE",
                 path: "/catalog/items/{id}",
                 description: "Remove an item from the catalog.",
                 params: [
-                    { name: "id", type: "text", placeholder: "Item ID", value: "" }
+                    { name: "id", type: "text", placeholder: "Item ID", value: "1" }
                 ]
             },
             {
                 id: 6,
-                name: "Check Availability",
-                method: "GET",
-                path: "/availability",
-                description: "Check if a SKU is available for dates.",
-                params: [
-                    { name: "sku", type: "text", placeholder: "SKU Code", value: "" },
-                    { name: "start_date", type: "date", placeholder: "YYYY-MM-DD", value: "" },
-                    { name: "end_date", type: "date", placeholder: "YYYY-MM-DD", value: "" }
-                ]
-            },
-            {
-                id: 7,
                 name: "List Physical Items",
                 method: "GET",
                 path: "/physical-items",
                 description: "View individual physical inventory units.",
                 params: []
+            },
+            {
+                id: 7,
+                name: "Get Availability",
+                method: "GET",
+                path: "/availability",
+                description: "Check if a SKU is available for a date range.",
+                params: [
+                    { name: "sku", type: "text", placeholder: "SKU Code", value: "LUX-001" },
+                    { name: "start_date", type: "date", placeholder: "YYYY-MM-DD", value: "" },
+                    { name: "end_date", type: "date", placeholder: "YYYY-MM-DD", value: "" }
+                ]
+            },
+            {
+                id: 8,
+                name: "List Reservations",
+                method: "GET",
+                path: "/reservations",
+                description: "List all reservations.",
+                params: []
+            },
+            {
+                id: 9,
+                name: "Create Reservation",
+                method: "POST",
+                path: "/reservations",
+                description: "Reserve an item for a specific date range.",
+                params: [
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "sku": "LUX-001",\n  "start_date": "2025-06-01",\n  "end_date": "2025-06-05",\n  "note": "VIP Client"\n}'
+                    }
+                ]
+            },
+            {
+                id: 10,
+                name: "Transition Reservation",
+                method: "PATCH",
+                path: "/reservations/{id}",
+                description: "Change reservation status (allocate/release).",
+                params: [
+                    { name: "id", type: "text", placeholder: "Reservation ID", value: "1" },
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "action": "allocate"\n}'
+                    }
+                ]
             }
         ];
 
@@ -216,8 +265,8 @@
                     {
                         name: "body",
                         type: "json",
-                        placeholder: '{\n  "user_id": 12,\n  "item_id": 505,\n  "start_date": "2025-05-01",\n  "end_date": "2025-05-07"\n}',
-                        value: ""
+                        placeholder: "JSON Body",
+                        value: '{\n  "user_id": 1,\n  "item_id": 1,\n  "start_date": "2025-01-01",\n  "end_date": "2025-01-07"\n}'
                     }
                 ]
             },
@@ -242,7 +291,7 @@
                 path: "/orders/{orderId}",
                 description: "Retrieve a single order by ID.",
                 params: [
-                    { name: "orderId", type: "text", placeholder: "Order ID", value: "" }
+                    { name: "orderId", type: "text", placeholder: "Order ID", value: "1" }
                 ]
             },
             {
@@ -252,7 +301,7 @@
                 path: "/orders/{orderId}",
                 description: "Cancel an order (Only PENDING).",
                 params: [
-                    { name: "orderId", type: "text", placeholder: "Order ID", value: "" }
+                    { name: "orderId", type: "text", placeholder: "Order ID", value: "1" }
                 ]
             },
             {
@@ -262,12 +311,12 @@
                 path: "/orders/{orderId}/status",
                 description: "Manually update order status.",
                 params: [
-                    { name: "orderId", type: "text", placeholder: "Order ID", value: "" },
+                    { name: "orderId", type: "text", placeholder: "Order ID", value: "1" },
                     {
                         name: "body",
                         type: "json",
-                        placeholder: '{\n  "new_status": "active"\n}',
-                        value: ""
+                        placeholder: "JSON Body",
+                        value: '{\n  "new_status": "active"\n}'
                     }
                 ]
             },
@@ -278,7 +327,7 @@
                 path: "/orders/{orderId}/logs",
                 description: "View status transition history.",
                 params: [
-                    { name: "orderId", type: "text", placeholder: "Order ID", value: "" }
+                    { name: "orderId", type: "text", placeholder: "Order ID", value: "1" }
                 ]
             },
             {
@@ -288,7 +337,7 @@
                 path: "/orders/{orderId}/confirm",
                 description: "Start async confirmation workflow.",
                 params: [
-                    { name: "orderId", type: "text", placeholder: "Order ID", value: "" }
+                    { name: "orderId", type: "text", placeholder: "Order ID", value: "1" }
                 ]
             },
             {
@@ -365,7 +414,6 @@
                 let finalPath = endpoint.path;
                 let body = null;
                 
-                // Do NOT send Content-Type on GET/DELETE to avoid Preflight/CORS issues
                 const headers = {};
                 if (endpoint.method === 'POST' || endpoint.method === 'PUT' || endpoint.method === 'PATCH') {
                     headers['Content-Type'] = 'application/json';
@@ -442,7 +490,7 @@
             };
 
             return (
-                <div className="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-slate-100 card-float">
+                <div className="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-slate-100 card-float flex flex-col h-full">
                     <div className="flex items-center gap-3 mb-4">
                         <span className={`px-3 py-1 rounded-lg font-black text-sm ${methodColors[endpoint.method]}`}>
                             {endpoint.method}
@@ -452,7 +500,7 @@
                         </span>
                     </div>
 
-                    <p className="text-slate-500 mb-6 text-sm font-medium">{endpoint.description}</p>
+                    <p className="text-slate-500 mb-6 text-sm font-medium flex-grow">{endpoint.description}</p>
                     {endpoint.params.length > 0 && (
                         <div className="bg-slate-50 p-4 rounded-xl mb-4 border-2 border-slate-100">
                             {endpoint.params.map(param => (
@@ -485,7 +533,7 @@
                         onClick={executeCall}
                         disabled={loading}
                         className={`
-                            w-full py-3 rounded-xl font-bold text-white mb-4 btn-3d
+                            w-full py-3 rounded-xl font-bold text-white mb-4 btn-3d mt-auto
                             ${loading ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-400 hover:bg-blue-500'}
                         `}
                     >
