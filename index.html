@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Dashboard</title>
-    <!-- 
-        IMPORTANT: CORS Note
-        This HTML file must be served via HTTP (not file://) to avoid CORS errors.
-        Run: python3 -m http.server 8000
-        Then open: http://localhost:8000/web_ui.html
-    -->
-    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
@@ -372,6 +365,7 @@
                 let finalPath = endpoint.path;
                 let body = null;
                 
+                // Do NOT send Content-Type on GET/DELETE to avoid Preflight/CORS issues
                 const headers = {};
                 if (endpoint.method === 'POST' || endpoint.method === 'PUT' || endpoint.method === 'PATCH') {
                     headers['Content-Type'] = 'application/json';
@@ -520,7 +514,7 @@
 
         const UserPage = () => {
             return (
-                <div className="max-w-5xl mx-auto">
+                <div className="w-full">
                     <div className="bg-pink-50 border-4 border-pink-100 rounded-[2rem] p-8 mb-8 text-center">
                         <div className="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
                              <i className="ph ph-user text-4xl text-pink-400"></i>
@@ -532,7 +526,7 @@
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {userEndpoints.map(ep => (
                             <EndpointCard key={ep.id} endpoint={ep} baseUrl={USER_BASE_URL} />
                         ))}
@@ -543,7 +537,7 @@
 
         const CatalogPage = () => {
             return (
-                <div className="max-w-5xl mx-auto">
+                <div className="w-full">
                     <div className="bg-blue-50 border-4 border-blue-100 rounded-[2rem] p-8 mb-8 text-center">
                         <div className="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
                              <i className="ph ph-package text-4xl text-blue-400"></i>
@@ -555,7 +549,7 @@
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {catalogEndpoints.map(ep => (
                             <EndpointCard key={ep.id} endpoint={ep} baseUrl={CATALOG_BASE_URL} />
                         ))}
@@ -566,7 +560,7 @@
 
         const OrderPage = () => {
             return (
-                <div className="max-w-5xl mx-auto">
+                <div className="w-full">
                     <div className="bg-green-50 border-4 border-green-100 rounded-[2rem] p-8 mb-8 text-center">
                         <div className="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
                              <i className="ph ph-shopping-cart text-4xl text-green-500"></i>
@@ -578,7 +572,7 @@
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {orderEndpoints.map(ep => (
                             <EndpointCard key={ep.id} endpoint={ep} baseUrl={ORDER_BASE_URL} />
                         ))}
@@ -601,7 +595,7 @@
 
                     <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                    <main className="container mx-auto px-4">
+                    <main className="w-full max-w-[95%] mx-auto px-4">
                         {activeTab === 1 && <UserPage />}
                         {activeTab === 2 && <CatalogPage />}
                         {activeTab === 3 && <OrderPage />}
