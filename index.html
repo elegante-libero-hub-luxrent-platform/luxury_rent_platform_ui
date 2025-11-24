@@ -74,7 +74,7 @@
         const { useState, useEffect } = React;
 
         // --- CONFIGURATION ---
-        const USER_BASE_URL = "https://microservices1iter2-314897419193.europe-west1.run.app";
+        const USER_BASE_URL = "https://user-and-profile-service-314897419193.europe-west1.run.app";
         const CATALOG_BASE_URL = "https://catalog-and-inventory-service-314897419193.europe-west1.run.app";
         const ORDER_BASE_URL = "https://order-and-rental-service-314897419193.europe-west1.run.app";
 
@@ -90,21 +90,140 @@
             },
             {
                 id: 1,
-                name: "Get User",
+                name: "Health Check",
                 method: "GET",
-                path: "/users/{userId}",
-                description: "Get user profile by ID.",
-                params: [
-                    { name: "userId", type: "text", placeholder: "User ID", value: "1" }
-                ]
+                path: "/health",
+                description: "Simple service health check.",
+                params: []
             },
             {
                 id: 2,
+                name: "Create User",
+                method: "POST",
+                path: "/users",
+                description: "Create a new user account.",
+                params: [
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "name": "Kobe Bryant",\n  "email": "kobe24@example.com",\n  "phone": "+11234567890",\n  "membership_tier": "PRO",\n  "password": "MambaOut"\n}'
+                    }
+                ]
+            },
+            {
+                id: 3,
                 name: "List Users",
                 method: "GET",
                 path: "/users",
-                description: "List all users (if supported).",
-                params: []
+                description: "List users with filters.",
+                params: [
+                    { name: "name", type: "text", placeholder: "Name", value: "" },
+                    { name: "email", type: "text", placeholder: "Email", value: "" },
+                    { name: "phone", type: "text", placeholder: "Phone", value: "" },
+                    { name: "membership_tier", type: "text", placeholder: "Tier (FREE/PRO)", value: "" },
+                    { name: "pageSize", type: "text", placeholder: "10", value: "10" },
+                    { name: "pageToken", type: "text", placeholder: "Token", value: "" }
+                ]
+            },
+            {
+                id: 4,
+                name: "Get User",
+                method: "GET",
+                path: "/users/{user_id}",
+                description: "Get user profile by ID.",
+                params: [
+                    { name: "user_id", type: "text", placeholder: "User UUID", value: "" }
+                ]
+            },
+            {
+                id: 5,
+                name: "Update User",
+                method: "PATCH",
+                path: "/users/{user_id}",
+                description: "Partially update a user.",
+                params: [
+                    { name: "user_id", type: "text", placeholder: "User UUID", value: "" },
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "name": "Black Mamba",\n  "membership_tier": "PROMAX"\n}'
+                    }
+                ]
+            },
+            {
+                id: 6,
+                name: "Delete User",
+                method: "DELETE",
+                path: "/users/{user_id}",
+                description: "Delete a user account.",
+                params: [
+                    { name: "user_id", type: "text", placeholder: "User UUID", value: "" }
+                ]
+            },
+            {
+                id: 7,
+                name: "Create Profile",
+                method: "POST",
+                path: "/profiles",
+                description: "Create a profile for a user.",
+                params: [
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "user_id": "PASTE_USER_UUID_HERE",\n  "username": "mamba_24",\n  "display_name": "Black Mamba",\n  "bio": "Love hoops & craftsmanship.",\n  "style_tags": ["street", "sport"]\n}'
+                    }
+                ]
+            },
+            {
+                id: 8,
+                name: "List Profiles",
+                method: "GET",
+                path: "/profiles",
+                description: "List profiles with filters.",
+                params: [
+                    { name: "username", type: "text", placeholder: "Username", value: "" },
+                    { name: "user_id", type: "text", placeholder: "User UUID", value: "" },
+                    { name: "pageSize", type: "text", placeholder: "10", value: "10" }
+                ]
+            },
+            {
+                id: 9,
+                name: "Get Profile",
+                method: "GET",
+                path: "/profiles/{profile_id}",
+                description: "Retrieve a profile by ID.",
+                params: [
+                    { name: "profile_id", type: "text", placeholder: "Profile UUID", value: "" }
+                ]
+            },
+            {
+                id: 10,
+                name: "Update Profile",
+                method: "PATCH",
+                path: "/profiles/{profile_id}",
+                description: "Update profile details.",
+                params: [
+                    { name: "profile_id", type: "text", placeholder: "Profile UUID", value: "" },
+                    {
+                        name: "body",
+                        type: "json",
+                        placeholder: "JSON Body",
+                        value: '{\n  "bio": "Updated bio text.",\n  "style_tags": ["new_style"]\n}'
+                    }
+                ]
+            },
+            {
+                id: 11,
+                name: "Delete Profile",
+                method: "DELETE",
+                path: "/profiles/{profile_id}",
+                description: "Delete a profile.",
+                params: [
+                    { name: "profile_id", type: "text", placeholder: "Profile UUID", value: "" }
+                ]
             }
         ];
 
@@ -356,7 +475,7 @@
 
         const Navbar = ({ activeTab, setActiveTab }) => {
             const tabs = [
-                { id: 1, label: "Microservice 1", color: "bg-pink-200 hover:bg-pink-300 text-pink-800" },
+                { id: 1, label: "User & Profile", color: "bg-pink-200 hover:bg-pink-300 text-pink-800" },
                 { id: 2, label: "Catalog & Inventory", color: "bg-blue-200 hover:bg-blue-300 text-blue-800" }, 
                 { id: 3, label: "Order & Rental", color: "bg-green-200 hover:bg-green-300 text-green-800" },
                 { id: 4, label: "Microservice 4", color: "bg-purple-200 hover:bg-purple-300 text-purple-800" },
