@@ -68,7 +68,9 @@
         const { useState, useEffect } = React;
 
         // --- CONFIGURATION ---
-        const USER_BASE_URL = "https://user-and-profile-service-314897419193.europe-west1.run.app";
+        // User Service: Use Composite service to proxy requests (avoids self-signed cert issues)
+        // Direct access: https://34.13.123.175 (requires accepting self-signed cert first)
+        const USER_BASE_URL = "https://composite-microservice-314897419193.europe-west1.run.app";
         const CATALOG_BASE_URL = "https://catalog-and-inventory-service-314897419193.europe-west1.run.app";
         const ORDER_BASE_URL = "https://order-and-rental-service-314897419193.europe-west1.run.app";
         const COMPOSITE_BASE_URL = "https://composite-microservice-314897419193.europe-west1.run.app";
@@ -646,9 +648,13 @@
                 endpoint.params.forEach(param => {
                     if (param.name === 'body') {
                         try {
-                            if(inputs['body']) body = inputs['body']; 
+                            if(inputs['body']) {
+                                // Parse and re-stringify to ensure valid JSON
+                                const parsed = JSON.parse(inputs['body']);
+                                body = JSON.stringify(parsed);
+                            }
                         } catch(e) {
-                            setError("Invalid JSON in body");
+                            setError("Invalid JSON in body: " + e.message);
                             return;
                         }
                     } else if (endpoint.path.includes(`{${param.name}}`)) {
@@ -670,6 +676,7 @@
                 try {
                     const res = await fetch(urlObj.toString(), {
                         method: endpoint.method,
+                        mode: 'cors',
                         headers: headers,
                         body: (endpoint.method === 'POST' || endpoint.method === 'PUT' || endpoint.method === 'PATCH') ? body : undefined
                     });
@@ -791,6 +798,10 @@
                         <p className="text-slate-500 font-medium">Manage user accounts, profiles, and authentication.</p>
                         <div className="mt-4 inline-block bg-white px-4 py-1 rounded-full text-xs font-mono text-slate-400 border border-slate-200">
                             Host: {USER_BASE_URL}
+                        </div>
+                        <div className="mt-4 inline-block bg-green-100 px-4 py-2 rounded-xl text-sm text-green-800 border-2 border-green-200">
+                            <i className="ph ph-check-circle mr-2"></i>
+                            <strong>Compute Engine VM</strong> with MySQL database (via HTTPS Load Balancer)
                         </div>
                     </div>
 
